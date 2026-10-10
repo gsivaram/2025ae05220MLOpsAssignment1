@@ -102,3 +102,24 @@ def test_download_force_fetches_and_writes(tmp_path, monkeypatch):
     dest = tmp_path / "sub" / "raw.data"
     data.download_raw(dest=dest, force=True)
     assert data.load_raw(dest).shape == (1, 14)
+
+
+def test_forced_download_falls_back_to_cached_file_when_offline(tmp_path, monkeypatch):
+    dest = tmp_path / "raw.data"
+    dest.write_text("cached")
+
+    def offline(*_a, **_k):
+        raise OSError("network unreachable")
+
+    monkeypatch.setattr(data.urllib.request, "urlopen", offline)
+    assert data.download_raw(dest=dest, force=True) == dest
+    assert dest.read_text() == "cached"
+
+
+def test_download_without_cache_propagates_network_error(tmp_path, monkeypatch):
+    def offline(*_a, **_k):
+        raise OSError("network unreachable")
+
+    monkeypatch.setattr(data.urllib.request, "urlopen", offline)
+    with pytest.raises(OSError):
+        data.download_raw(dest=tmp_path / "missing.data", force=True)

@@ -22,8 +22,15 @@ def download_raw(dest: Path = config.RAW_FILE, url: str = config.UCI_URL, force:
         log.info("Raw file already present at %s", dest)
         return dest
     log.info("Downloading %s", url)
-    with urllib.request.urlopen(url, timeout=30) as resp:
-        payload = resp.read()
+    try:
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            payload = resp.read()
+    except OSError as exc:
+        # Offline / firewalled machines (e.g. a lab) fall back to the committed copy.
+        if dest.exists():
+            log.warning("Download failed (%s); using existing file %s", exc, dest)
+            return dest
+        raise
     dest.write_bytes(payload)
     log.info("Saved %d bytes (sha256=%s)", len(payload), hashlib.sha256(payload).hexdigest()[:16])
     return dest

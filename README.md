@@ -71,7 +71,7 @@ UCI Machine Learning Repository, *Heart Disease* (id 45),
 
 ```bash
 ruff check src scripts tests
-pytest --cov=heartrisk          # 41 tests, ~16 s, 98 % coverage
+pytest --cov=heartrisk          # 43 tests, ~17 s, 98 % coverage
 ```
 
 | File | Covers |
@@ -81,3 +81,12 @@ pytest --cov=heartrisk          # 41 tests, ~16 s, 98 % coverage
 | `tests/test_evaluation.py` | metric correctness, threshold behaviour, edge cases, plot generation |
 | `tests/test_eda.py` | every EDA figure renders |
 | `tests/test_train.py` | quick training run in a sandbox: all models trained, ROC-AUC > 0.8, best-on-CV selected, artefacts + MLflow runs written, **reproducible predictions across two runs** |
+
+## One-command run (used for the lab submission)
+
+```bash
+python scripts/run_pipeline.py      # lint → data → eda → train → test → predict
+```
+
+Writes per-step logs and `reports/run/run_summary.md` (host, OS, versions, commit,
+pass/fail). See [LAB_RUNBOOK.md](LAB_RUNBOOK.md) for the full lab procedure.

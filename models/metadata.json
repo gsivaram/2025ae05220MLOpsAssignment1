@@ -1,9 +1,9 @@
 {
   "model_name": "logistic_regression",
-  "model_version": "20261010171433",
+  "model_version": "20261010180359",
   "package_version": "0.1.0",
-  "trained_at": "2026-10-10T17:14:33+00:00",
-  "mlflow_run_id": "2782f70dc4e441dca662f127d92d42df",
+  "trained_at": "2026-10-10T18:03:59+00:00",
+  "mlflow_run_id": "6d0252a60f7d4984a120b24165eb1b15",
   "selection_metric": "cv_roc_auc_mean",
   "decision_threshold": 0.5,
   "features": [
