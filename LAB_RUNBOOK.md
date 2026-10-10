@@ -27,6 +27,9 @@ scopes `repo` and `workflow`). Never type your GitHub password here.
 
 ## 2. Create the environment
 
+On the lab VM (Rocky Linux, conda in the prompt) first leave conda's base env so the
+venv is clean: `conda deactivate`
+
 | Linux / macOS | Windows (PowerShell) |
 |---|---|
 | `python3 -m venv .venv` | `python -m venv .venv` |
@@ -48,8 +51,9 @@ python scripts/run_pipeline.py
 | data | downloads UCI file (falls back to the committed copy if offline), writes cleaned CSV | ~2 s |
 | eda | executes `notebooks/01_eda.ipynb`, regenerates figures 01–06 | ~4 s |
 | train | 116-configuration grid search, MLflow logging, saves `models/` + figures 07–10 | ~20 s |
-| test | 43 unit tests with coverage | ~17 s |
+| test | 61 unit tests (data, features, training, API) with coverage | ~17 s |
 | predict | scores `sample_request.json` | ~3 s |
+| docker | builds `heartrisk-api` image, runs it, checks /health, /predict, 422 on bad input, /metrics, HEALTHCHECK | ~2 min first time, then ~10 s |
 
 Expected: `PIPELINE PASSED`, selected model **logistic_regression**, CV ROC-AUC
 **0.9075**, test ROC-AUC **0.9610** (identical on every machine — fixed seeds).
@@ -66,6 +70,19 @@ with `python scripts/run_pipeline.py --from <step>`.
 | `lab_00_environment.png` | top of the runner output — Host / OS / Python / commit |
 | `lab_01_pipeline_passed.png` | the step results and `PIPELINE PASSED` line |
 | `tests_01_pytest_coverage.png` | `pytest --cov=heartrisk` — passed count + coverage table |
+
+| `docker_01_build.png` | `docker build -t heartrisk-api:latest .` finishing, then `docker image ls heartrisk-api` |
+| `docker_02_smoke_test.png` | `bash scripts/docker_smoke_test.sh` — the /health, /predict JSON and `DOCKER SMOKE TEST PASSED` |
+
+**API in the browser** — `docker run -d --name heartrisk -p 8000:8000 heartrisk-api:latest`, then in Firefox:
+
+| File | Where |
+|---|---|
+| `api_01_swagger.png` | http://127.0.0.1:8000/docs — endpoint list |
+| `api_02_predict.png` | `/docs` → **POST /predict** → *Try it out* → *Execute* (example body is pre-filled) → response |
+| `api_03_metrics.png` | http://127.0.0.1:8000/metrics |
+
+Stop it afterwards: `docker rm -f heartrisk`
 
 **MLflow UI** — start with `mlflow ui --backend-store-uri ./mlruns`, open http://127.0.0.1:5000
 

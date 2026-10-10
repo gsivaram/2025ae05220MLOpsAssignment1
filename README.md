@@ -67,11 +67,36 @@ UCI Machine Learning Repository, *Heart Disease* (id 45),
 `processed.cleveland.data` — 303 rows. Downloaded automatically by
 `scripts/download_data.py`; target `num` (0–4) is binarised to presence (1) / absence (0).
 
+## Prediction API (FastAPI) and Docker
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | liveness + model status (Docker HEALTHCHECK, Kubernetes probes) |
+| `GET /model` | loaded model's metadata (version, metrics, params) |
+| `POST /predict` | one patient → `prediction`, `label`, `probability_disease`, `confidence`, `risk_band` |
+| `POST /predict/batch` | up to 100 patients |
+| `GET /metrics` | Prometheus metrics (requests, latency, predictions by label, probability histogram) |
+| `GET /docs` | Swagger UI |
+
+Inputs are validated against clinical ranges (HTTP 422 on bad input); `ca` and `thal`
+are optional and imputed by the pipeline. Every request is logged as one JSON line
+with a request id (also returned as `X-Request-ID`).
+
+```bash
+uvicorn heartrisk.api:app --reload                      # local, no Docker
+bash scripts/docker_smoke_test.sh                       # build + run + verify container
+docker run -p 8000:8000 heartrisk-api:latest
+curl -X POST localhost:8000/predict -H 'Content-Type: application/json' -d @sample_request.json
+```
+
+Image: two-stage build on `python:3.12-slim`, serving deps only
+(`requirements-serve.txt`), non-root user, model baked in, built-in HEALTHCHECK.
+
 ## Tests
 
 ```bash
 ruff check src scripts tests
-pytest --cov=heartrisk          # 43 tests, ~17 s, 98 % coverage
+pytest --cov=heartrisk          # 61 tests, ~17 s, 98 % coverage
 ```
 
 | File | Covers |
@@ -80,12 +105,13 @@ pytest --cov=heartrisk          # 43 tests, ~17 s, 98 % coverage
 | `tests/test_features.py` | engineered feature maths, column layout, imputation leaves no NaN, scaling, unseen categories, end-to-end pipeline |
 | `tests/test_evaluation.py` | metric correctness, threshold behaviour, edge cases, plot generation |
 | `tests/test_eda.py` | every EDA figure renders |
+| `tests/test_api.py` | health, predict/batch contract, parity with offline pipeline, validation (422), optional fields, request-id, JSON logs, Prometheus metrics, 503 without model |
 | `tests/test_train.py` | quick training run in a sandbox: all models trained, ROC-AUC > 0.8, best-on-CV selected, artefacts + MLflow runs written, **reproducible predictions across two runs** |
 
 ## One-command run (used for the lab submission)
 
 ```bash
-python scripts/run_pipeline.py      # lint → data → eda → train → test → predict
+python scripts/run_pipeline.py      # lint → data → eda → train → test → predict → docker
 ```
 
 Writes per-step logs and `reports/run/run_summary.md` (host, OS, versions, commit,

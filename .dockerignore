@@ -1,0 +1,15 @@
+# Only src/, pyproject.toml, requirements-serve.txt and models/ are needed in the build context.
+.venv/
+.git/
+mlruns/
+data/
+notebooks/
+reports/
+screenshots/
+tests/
+**/__pycache__/
+**/*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage

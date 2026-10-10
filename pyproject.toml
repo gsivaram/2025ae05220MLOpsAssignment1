@@ -21,6 +21,7 @@ filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore:.*utcnow.*:DeprecationWarning",
     "ignore::UserWarning:mlflow.*",
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated",
 ]
 
 [tool.ruff]

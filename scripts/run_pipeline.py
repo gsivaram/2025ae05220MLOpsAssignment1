@@ -36,6 +36,7 @@ STEPS: list[tuple[str, str, list[str]]] = [
     ("train", "Train + tune + log to MLflow", [PY, "scripts/train.py"]),
     ("test", "Unit tests + coverage", [PY, "-m", "pytest", "--cov=heartrisk", "--cov-report=term"]),
     ("predict", "Inference on sample request", [PY, "scripts/predict.py", "sample_request.json"]),
+    ("docker", "Build image + container smoke test", ["bash", "scripts/docker_smoke_test.sh"]),
 ]
 STEP_NAMES = [s[0] for s in STEPS]
 PACKAGES = ["numpy", "pandas", "scikit-learn", "mlflow", "matplotlib", "fastapi", "pytest"]
@@ -49,6 +50,11 @@ def environment() -> dict[str, str]:
             return "not installed"
 
     try:
+        docker = subprocess.run(["docker", "version", "--format", "{{.Server.Version}}"], capture_output=True,
+                                text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        docker = "not available"
+    try:
         commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
                                 text=True, check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
@@ -58,6 +64,7 @@ def environment() -> dict[str, str]:
         "OS": f"{platform.system()} {platform.release()} ({platform.machine()})",
         "Python": f"{platform.python_version()} at {PY}",
         "Git commit": commit,
+        "Docker": docker,
         "Started": datetime.now().astimezone().isoformat(timespec="seconds"),
         **{f"pkg {p}": version(p) for p in PACKAGES},
     }

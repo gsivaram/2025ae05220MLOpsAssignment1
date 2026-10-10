@@ -1,0 +1,10 @@
+# Runtime dependencies of the prediction API only (used by the Docker image).
+# Versions must match requirements.txt: the pickled model needs the same scikit-learn.
+numpy==2.5.3
+pandas==2.3.3
+scikit-learn==1.7.2
+joblib==1.6.0
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.0
+prometheus-client==0.26.0
