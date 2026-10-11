@@ -19,6 +19,8 @@ concurrency:
 permissions:
   contents: read
 
+# Runner OS is pinned (not ubuntu-latest) so the environment cannot change under the
+# pipeline; actions are on their Node 24 major versions.
 env:
   PYTHON_VERSION: "3.12"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -30,11 +32,11 @@ defaults:
 jobs:
   lint:
     name: Lint (ruff)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install ruff (pinned as in requirements.txt)
@@ -45,7 +47,7 @@ jobs:
           ruff check src scripts tests --output-format=github | tee ci-logs/ruff.log
       - name: Upload lint log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lint-log
           path: ci-logs/
@@ -53,11 +55,11 @@ jobs:
   test:
     name: Unit tests
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -86,7 +88,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: ci-logs/
@@ -94,11 +96,11 @@ jobs:
   train:
     name: Train model
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -146,13 +148,13 @@ jobs:
         if: always()
         run: tar -czf ci-logs/mlruns.tar.gz mlruns || true
       - name: Upload model
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: model
           path: models/
       - name: Upload training logs, figures and MLflow runs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: training-outputs
           path: |
@@ -162,12 +164,12 @@ jobs:
   docker:
     name: Docker build + smoke test
     needs: train
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use the model trained in this pipeline run
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: model
           path: models/
@@ -186,7 +188,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload smoke-test log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-smoke-log
           path: ci-logs/
