@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import socket
 import sys
 import time
 import uuid
@@ -13,6 +14,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 REQUEST_ID_HEADER = "X-Request-ID"
+SERVED_BY_HEADER = "X-Served-By"
+# Container / pod name: lets clients (and the k8s verification) see which replica answered.
+HOSTNAME = socket.gethostname()
 
 # --- Prometheus metrics -------------------------------------------------------
 # `path` is the route template (e.g. /predict), never the raw URL, to keep label
@@ -79,6 +83,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             status = response.status_code
             response.headers[REQUEST_ID_HEADER] = request_id
+            response.headers[SERVED_BY_HEADER] = HOSTNAME
             return response
         finally:
             IN_FLIGHT.dec()

@@ -1,0 +1,7 @@
+# Runtime configuration kept out of the image, so it can change without a rebuild.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heartrisk-api-config
+data:
+  LOG_LEVEL: "INFO"

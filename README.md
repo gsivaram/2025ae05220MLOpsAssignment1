@@ -94,6 +94,30 @@ curl -X POST localhost:8000/predict -H 'Content-Type: application/json' -d @samp
 Image: two-stage build on `python:3.12-slim`, serving deps only
 (`requirements-serve.txt`), non-root user, model baked in, built-in HEALTHCHECK.
 
+## Kubernetes deployment (Minikube + NGINX Ingress)
+
+```bash
+bash scripts/k8s_deploy.sh          # install tools if missing → minikube → build/load image → deploy → verify
+bash scripts/k8s_deploy.sh status   # objects + access URLs
+bash scripts/k8s_deploy.sh verify   # re-run endpoint checks through the Ingress
+bash scripts/k8s_deploy.sh down     # delete the namespace   |  destroy: delete the cluster
+```
+
+`k8s/` (applied with Kustomize, `kubectl apply -k k8s/`):
+
+| Manifest | Purpose |
+|---|---|
+| `namespace.yaml`, `configmap.yaml` | `heartrisk` namespace; runtime config (`LOG_LEVEL`) outside the image |
+| `deployment.yaml` | 2 replicas, rolling update with `maxUnavailable: 0`, startup/readiness/liveness probes on `/health`, CPU/memory requests + limits, non-root, read-only root FS, all capabilities dropped, Prometheus scrape annotations |
+| `service.yaml` | ClusterIP service load-balancing across the replicas |
+| `ingress.yaml` | NGINX Ingress: `heartrisk.local` host rule + IP rule (browser access without `/etc/hosts`) |
+| `hpa.yaml`, `pdb.yaml` | autoscale 2–5 replicas at 70 % CPU; keep ≥ 1 replica during disruptions |
+
+Access: `curl -H "Host: heartrisk.local" http://$(minikube -p heartrisk ip)/health`, or open
+`http://$(minikube -p heartrisk ip)/docs` (Linux). Every response carries `X-Served-By: <pod name>`,
+so load balancing across replicas is visible; the Ingress-generated `X-Request-ID` is kept
+end-to-end in the API logs. Pinned tools: minikube v1.39.0 (Kubernetes v1.37.0), kubectl v1.37.1.
+
 ## CI/CD (GitHub Actions)
 
 `.github/workflows/ci.yml` runs on every push / pull request to `main` (and manually):
@@ -105,7 +129,7 @@ lint ──▶ test ──▶ train ──▶ docker
 | Job | Does | Fails when | Artifacts |
 |---|---|---|---|
 | lint | `ruff check` (errors annotated inline on the PR/commit) | any lint error | `lint-log` |
-| test | 61 pytest tests + coverage | any test fails | `test-reports` (pytest log, JUnit XML, coverage XML + HTML) |
+| test | 72 pytest tests + coverage | any test fails | `test-reports` (pytest log, JUnit XML, coverage XML + HTML) |
 | train | download → full grid search → MLflow → sanity prediction | training error, or CV ROC-AUC < 0.85 | `model`, `training-outputs` (logs, figures, `mlruns.tar.gz`) |
 | docker | builds the image **with the model trained in this run**, runs the smoke test | build fails / any endpoint check fails | `docker-smoke-log` |
 
@@ -116,7 +140,7 @@ size) to the run page; logs are uploaded even when a job fails.
 
 ```bash
 ruff check src scripts tests
-pytest --cov=heartrisk          # 61 tests, ~17 s, 98 % coverage
+pytest --cov=heartrisk          # 72 tests, ~13 s, 98 % coverage
 ```
 
 | File | Covers |
@@ -125,6 +149,7 @@ pytest --cov=heartrisk          # 61 tests, ~17 s, 98 % coverage
 | `tests/test_features.py` | engineered feature maths, column layout, imputation leaves no NaN, scaling, unseen categories, end-to-end pipeline |
 | `tests/test_evaluation.py` | metric correctness, threshold behaviour, edge cases, plot generation |
 | `tests/test_eda.py` | every EDA figure renders |
+| `tests/test_k8s_manifests.py` | manifests agree with the API/Dockerfile: probe routes exist, ports, selectors, Ingress → Service, HPA/PDB targets, hardening, scrape annotations |
 | `tests/test_api.py` | health, predict/batch contract, parity with offline pipeline, validation (422), optional fields, request-id, JSON logs, Prometheus metrics, 503 without model |
 | `tests/test_train.py` | quick training run in a sandbox: all models trained, ROC-AUC > 0.8, best-on-CV selected, artefacts + MLflow runs written, **reproducible predictions across two runs** |
 

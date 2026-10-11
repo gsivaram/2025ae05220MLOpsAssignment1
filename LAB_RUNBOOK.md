@@ -64,7 +64,7 @@ python scripts/run_pipeline.py
 | data | downloads UCI file (falls back to the committed copy if offline), writes cleaned CSV | ~2 s |
 | eda | executes `notebooks/01_eda.ipynb`, regenerates figures 01–06 | ~4 s |
 | train | 116-configuration grid search, MLflow logging, saves `models/` + figures 07–10 | ~20 s |
-| test | 61 unit tests (data, features, training, API) with coverage | ~17 s |
+| test | 72 unit tests (data, features, training, API, k8s manifests) with coverage | ~90 s in the lab |
 | predict | scores `sample_request.json` | ~3 s |
 | docker | builds `heartrisk-api` image, runs it, checks /health, /predict, 422 on bad input, /metrics, HEALTHCHECK | ~2 min first time, then ~10 s |
 
@@ -110,7 +110,30 @@ Stop it afterwards: `docker rm -f heartrisk`
 | `mlflow_07_logged_model.png` | same run → Artifacts → `model/` (signature) |
 | `mlflow_08_model_selection.png` | `model_selection` run → Artifacts → `plots/model_comparison.png` |
 
-## 5. Commit the lab results
+## 5. Kubernetes deployment (Minikube + Ingress)
+
+The lab VM may be a different machine each session, so do steps 3–6 in **one session**.
+No sudo is needed — `minikube` and `kubectl` are installed into `~/.local/bin`.
+
+```bash
+bash scripts/k8s_deploy.sh            # ~5–8 min the first time (downloads the Kubernetes node image)
+export PATH="$HOME/.local/bin:$PATH"  # so you can run minikube / kubectl yourself afterwards
+```
+
+Expected end of output: rollout `successfully rolled out`, both replicas listed under
+*Load balancing*, `KUBERNETES DEPLOYMENT VERIFIED`, then the object list.
+
+| File | What to capture |
+|---|---|
+| `k8s_01_deploy_verified.png` | end of `k8s_deploy.sh`: rollout, /health, /predict JSON, load-balancing counts, `KUBERNETES DEPLOYMENT VERIFIED` |
+| `k8s_02_objects.png` | `kubectl --context heartrisk -n heartrisk get deploy,pods,svc,ingress,hpa,pdb -o wide` |
+| `k8s_03_ingress.png` | `kubectl --context heartrisk -n heartrisk describe ingress heartrisk-api` (rules → service → pod endpoints) |
+| `k8s_04_curl_ingress.png` | `curl -s -H "Host: heartrisk.local" -X POST http://$(minikube -p heartrisk ip)/predict -H 'Content-Type: application/json' -d @sample_request.json -i` (shows `X-Served-By`) |
+| `k8s_05_browser_docs.png` | Firefox → `http://<minikube ip>/docs` → POST /predict → *Try it out* → *Execute* |
+| `k8s_06_rollout.png` | run `bash scripts/k8s_deploy.sh` again → rolling update to revision 2, then `kubectl --context heartrisk -n heartrisk rollout history deployment/heartrisk-api` |
+| `k8s_07_dashboard.png` *(optional)* | `minikube -p heartrisk dashboard --url` → open the URL in Firefox → namespace *heartrisk* → Workloads |
+
+## 6. Commit the lab results
 
 ```bash
 git add -A

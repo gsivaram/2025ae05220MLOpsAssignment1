@@ -94,6 +94,12 @@ def test_request_id_is_propagated(client):
     assert client.get("/health", headers={"X-Request-ID": "abc123"}).headers["X-Request-ID"] == "abc123"
 
 
+def test_response_names_the_serving_replica(client):
+    import socket
+
+    assert client.get("/health").headers["X-Served-By"] == socket.gethostname()
+
+
 def test_metrics_endpoint_counts_requests(client):
     client.post("/predict", json=EXAMPLE_PATIENT)
     text = client.get("/metrics").text
