@@ -18,7 +18,7 @@ def test_clean_output_schema(clean_df):
     assert list(clean_df.columns) == config.FEATURES + [config.TARGET]
     assert "num" not in clean_df
     assert set(clean_df[config.TARGET].unique()) == {0, 1}
-    assert clean_df[config.TARGET].value_counts().to_dict() == {0: 164, 1: 139}
+    assert clean_df[config.TARGET].value_counts().to_dict() == {0: 999, 1: 139}
 
 
 @pytest.mark.parametrize("num, expected", [(0, 0), (1, 1), (2, 1), (4, 1)])
@@ -27,7 +27,9 @@ def test_target_is_binarised(raw_row, num, expected):
     assert out[config.TARGET].iloc[0] == expected
 
 
-@pytest.mark.parametrize("col, bad_value", [("cp", 9), ("thal", 5), ("sex", 2), ("slope", 0)])
+@pytest.mark.parametrize(
+    "col, bad_value", [("cp", 9), ("thal", 5), ("sex", 2), ("slope", 0)]
+)
 def test_out_of_domain_codes_become_missing(raw_row, col, bad_value):
     out = data.clean(pd.DataFrame([{**raw_row, col: bad_value}]))
     assert np.isnan(out[col].iloc[0])
