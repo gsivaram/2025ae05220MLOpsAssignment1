@@ -27,8 +27,21 @@ scopes `repo` and `workflow`). Never type your GitHub password here.
 
 ## 2. Create the environment
 
-On the lab VM (Rocky Linux, conda in the prompt) first leave conda's base env so the
-venv is clean: `conda deactivate`
+**Lab VM (Rocky Linux 9 + conda):** the system `python3` is **3.9 — too old**. Build the
+venv from conda's Python 3.12, then leave conda (the venv is self-contained):
+
+```bash
+conda activate base && python --version     # must be 3.12.x
+python -m venv .venv                        # or: $(conda info --base)/bin/python -m venv .venv
+conda deactivate
+source .venv/bin/activate && python --version   # still 3.12.x, prompt shows (.venv)
+pip install --upgrade pip
+pip install -r requirements.txt && pip install -e .
+```
+
+Every new terminal: `cd ~/2025ae05220MLOpsAssignment1 && source .venv/bin/activate`.
+
+Other machines:
 
 | Linux / macOS | Windows (PowerShell) |
 |---|---|
