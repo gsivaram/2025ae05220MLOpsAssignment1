@@ -1,0 +1,38 @@
+# kubectl apply -k k8s/monitoring/   (deploy the app first: the Prometheus Role lives in its namespace)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: heartrisk-monitoring
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - prometheus-rbac.yaml
+  - prometheus.yaml
+  - grafana.yaml
+  - ingress.yaml
+configMapGenerator:
+  - name: prometheus-config
+    namespace: monitoring
+    files:
+      - prometheus/prometheus.yml
+      - prometheus/rules.yml
+  - name: grafana-datasources
+    namespace: monitoring
+    files:
+      - grafana/datasources.yaml
+  - name: grafana-dashboard-provider
+    namespace: monitoring
+    files:
+      - grafana/dashboard-provider.yaml
+  - name: grafana-dashboards
+    namespace: monitoring
+    files:
+      - grafana/dashboards/heartrisk-api.json
+secretGenerator:
+  # Demo-only credentials for a local cluster (anonymous users get read-only access anyway).
+  - name: grafana-admin
+    namespace: monitoring
+    literals:
+      - user=admin
+      - password=heartrisk-admin

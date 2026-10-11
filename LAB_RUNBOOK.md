@@ -64,7 +64,7 @@ python scripts/run_pipeline.py
 | data | downloads UCI file (falls back to the committed copy if offline), writes cleaned CSV | ~2 s |
 | eda | executes `notebooks/01_eda.ipynb`, regenerates figures 01–06 | ~4 s |
 | train | 116-configuration grid search, MLflow logging, saves `models/` + figures 07–10 | ~20 s |
-| test | 72 unit tests (data, features, training, API, k8s manifests) with coverage | ~90 s in the lab |
+| test | 79 unit tests (data, features, training, API, k8s + monitoring manifests) with coverage | ~90 s in the lab |
 | predict | scores `sample_request.json` | ~3 s |
 | docker | builds `heartrisk-api` image, runs it, checks /health, /predict, 422 on bad input, /metrics, HEALTHCHECK | ~2 min first time, then ~10 s |
 
@@ -133,7 +133,28 @@ Expected end of output: rollout `successfully rolled out`, both replicas listed 
 | `k8s_06_rollout.png` | run `bash scripts/k8s_deploy.sh` again → rolling update to revision 2, then `kubectl --context heartrisk -n heartrisk rollout history deployment/heartrisk-api` |
 | `k8s_07_dashboard.png` *(optional)* | `minikube -p heartrisk dashboard --url` → open the URL in Firefox → namespace *heartrisk* → Workloads |
 
-## 6. Commit the lab results
+## 6. Monitoring (Prometheus + Grafana) and request logs
+
+```bash
+bash scripts/k8s_deploy.sh monitoring          # ends with MONITORING VERIFIED and the URLs
+IP=$(minikube -p heartrisk ip)
+python scripts/load_test.py --url http://$IP --duration 600 --rps 10 &   # 10 min of traffic in the background
+```
+
+Open in Firefox: `http://<IP>/grafana/` (dashboard opens directly) and `http://<IP>/prometheus/`.
+Wait ~2 minutes for the graphs to fill.
+
+| File | What to capture |
+|---|---|
+| `mon_01_verified.png` | end of `k8s_deploy.sh monitoring`: scraping 2 pods, req/s seen, dashboard provisioned, `MONITORING VERIFIED` |
+| `mon_02_grafana_dashboard.png` | Grafana dashboard, full page (all panels with data) |
+| `mon_03_prometheus_targets.png` | Prometheus → **Status → Target health**: `heartrisk-api` 2/2 **UP** + `prometheus` |
+| `mon_04_prometheus_query.png` | Prometheus → **Query** → `sum by (pod) (rate(heartrisk_http_requests_total[1m]))` → **Graph** |
+| `mon_05_prometheus_alerts.png` | Prometheus → **Alerts** (3 rules, inactive = healthy) |
+| `mon_06_api_logs.png` | `kubectl --context heartrisk -n heartrisk logs -l app.kubernetes.io/name=heartrisk-api --tail=8` (JSON request logs) |
+| `mon_07_alert_firing.png` *(optional)* | `kubectl --context heartrisk -n heartrisk scale deploy/heartrisk-api --replicas=0`, wait ~1.5 min → Alerts shows **HeartRiskApiDown** firing and dashboard *Replicas up* = 0; restore with `--replicas=2` |
+
+## 7. Commit the lab results
 
 ```bash
 git add -A

@@ -109,6 +109,12 @@ def test_metrics_endpoint_counts_requests(client):
     assert "heartrisk_model_info" in text
 
 
+def test_metrics_scrape_does_not_count_itself_in_flight(client):
+    line = next(ln for ln in client.get("/metrics").text.splitlines()
+                if ln.startswith("heartrisk_http_requests_in_flight "))
+    assert float(line.split()[1]) == 0
+
+
 def test_requests_are_logged_as_json(client, caplog):
     caplog.set_level(logging.INFO, logger="heartrisk.access")
     client.get("/health")

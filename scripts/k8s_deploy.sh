@@ -4,6 +4,8 @@
 # Usage: scripts/k8s_deploy.sh [command]
 #   up       (default) install tools if missing -> start minikube -> build + load image
 #            -> apply manifests -> wait for rollout -> verify through the Ingress
+#   monitoring  deploy Prometheus + Grafana (k8s/monitoring) and verify scraping + dashboard
+#   all      up + monitoring
 #   verify   re-run the endpoint checks against the running deployment
 #   status   show cluster objects
 #   down     delete the heartrisk namespace (cluster keeps running)
@@ -159,9 +161,63 @@ verify() {
   printf '\n\033[32mKUBERNETES DEPLOYMENT VERIFIED\033[0m\n'
 }
 
+monitoring() {
+  step "Apply monitoring stack (kubectl apply -k k8s/monitoring/)"
+  k get namespace "$NAMESPACE" >/dev/null 2>&1 || fail "deploy the app first (scripts/k8s_deploy.sh up)"
+  k apply -k k8s/monitoring/
+  k -n monitoring rollout status deployment/prometheus --timeout=300s
+  k -n monitoring rollout status deployment/grafana --timeout=300s
+  verify_monitoring
+}
+
+# Prometheus HTTP API helper: prom <path-and-query>
+prom() { curl -fsS -H "Host: ${HOST}" "${BASE}/prometheus/api/v1/$1"; }
+
+verify_monitoring() {
+  step "Verify monitoring through the Ingress"
+  [ -n "${BASE:-}" ] || resolve_endpoint
+  curl -fsS -o /dev/null -H "Host: ${HOST}" "${BASE}/prometheus/-/ready" || fail "Prometheus not ready"
+  ok "Prometheus ready at ${BASE}/prometheus"
+
+  local up=0
+  for _ in $(seq 1 30); do
+    up=$(prom 'targets?state=active' | python3 -c 'import json,sys
+t=json.load(sys.stdin)["data"]["activeTargets"]
+print(sum(1 for x in t if x["labels"].get("job")=="heartrisk-api" and x["health"]=="up"))')
+    [ "$up" -ge 2 ] && break
+    sleep 2
+  done
+  [ "$up" -ge 2 ] || fail "Prometheus scrapes ${up} API pods (expected >= 2)"
+  ok "Prometheus scraping ${up} heartrisk-api pods"
+
+  echo "  generating 20 s of traffic (scripts/load_test.py)..."
+  python3 scripts/load_test.py --url "$BASE" --host "$HOST" --duration 20 --rps 8 | tail -6
+  sleep 6   # one scrape interval + margin
+  local rate
+  rate=$(prom 'query?query=sum(rate(heartrisk_http_requests_total%5B1m%5D))' \
+    | python3 -c 'import json,sys; r=json.load(sys.stdin)["data"]["result"]; print(round(float(r[0]["value"][1]),2) if r else 0)')
+  ok "Prometheus sees ${rate} req/s on the API"
+
+  curl -fsS -H "Host: ${HOST}" "${BASE}/grafana/api/health" | grep -q '"database": *"ok"' || fail "Grafana unhealthy"
+  local title
+  title=$(curl -fsS -H "Host: ${HOST}" "${BASE}/grafana/api/dashboards/uid/heartrisk-api" \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["dashboard"]["title"])') || fail "dashboard not provisioned"
+  ok "Grafana healthy, dashboard provisioned: ${title}"
+
+  printf '\n\033[32mMONITORING VERIFIED\033[0m\n'
+  local ip; ip="$(minikube -p "$PROFILE" ip)"
+  echo "  Grafana:    http://${ip}/grafana/      (anonymous view; admin / heartrisk-admin to edit)"
+  echo "  Prometheus: http://${ip}/prometheus/   (Status > Targets, Alerts)"
+  echo "  Traffic:    python3 scripts/load_test.py --url http://${ip} --duration 300 --rps 10"
+}
+
 status() {
   step "Cluster objects (namespace ${NAMESPACE})"
   k -n "$NAMESPACE" get deploy,rs,pods,svc,ingress,hpa,pdb -o wide
+  if k get namespace monitoring >/dev/null 2>&1; then
+    step "Monitoring objects (namespace monitoring)"
+    k -n monitoring get deploy,pods,svc,ingress -o wide
+  fi
   step "Rollout history"
   k -n "$NAMESPACE" rollout history deployment/heartrisk-api | tail -5
   step "Access"
@@ -173,9 +229,11 @@ status() {
 
 case "${1:-up}" in
   up)      install_tools; start_cluster; build_and_load; deploy; verify; status ;;
+  monitoring) monitoring ;;
+  all)     install_tools; start_cluster; build_and_load; deploy; verify; monitoring; status ;;
   verify)  verify ;;
   status)  status ;;
-  down)    k delete namespace "$NAMESPACE" --ignore-not-found ;;
+  down)    k delete namespace monitoring "$NAMESPACE" --ignore-not-found ;;
   destroy) minikube delete -p "$PROFILE" ;;
-  *)       sed -n '2,12p' "$0"; exit 2 ;;
+  *)       sed -n '2,15p' "$0"; exit 2 ;;
 esac

@@ -77,7 +77,10 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         request_id = request.headers.get(REQUEST_ID_HEADER) or uuid.uuid4().hex[:12]
         request.state.request_id = request_id
         start = time.perf_counter()
-        IN_FLIGHT.inc()
+        # Prometheus scrapes are excluded everywhere, else every scrape counts itself as in flight.
+        tracked = request.url.path != "/metrics"
+        if tracked:
+            IN_FLIGHT.inc()
         status = 500
         try:
             response = await call_next(request)
@@ -86,7 +89,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             response.headers[SERVED_BY_HEADER] = HOSTNAME
             return response
         finally:
-            IN_FLIGHT.dec()
+            if tracked:
+                IN_FLIGHT.dec()
             elapsed = time.perf_counter() - start
             route = request.scope.get("route")
             path = getattr(route, "path", "unmatched")

@@ -118,6 +118,24 @@ Access: `curl -H "Host: heartrisk.local" http://$(minikube -p heartrisk ip)/heal
 so load balancing across replicas is visible; the Ingress-generated `X-Request-ID` is kept
 end-to-end in the API logs. Pinned tools: minikube v1.39.0 (Kubernetes v1.37.0), kubectl v1.37.1.
 
+## Monitoring & logging (Prometheus + Grafana)
+
+```bash
+bash scripts/k8s_deploy.sh monitoring     # (or `all` = app + monitoring) — deploys and verifies end-to-end
+python scripts/load_test.py --url http://$(minikube -p heartrisk ip) --duration 300 --rps 10   # live traffic
+```
+
+| Component | What it does |
+|---|---|
+| **Request logging** | every request → one JSON log line (`request_id`, method, route, status, latency, client); predictions also logged with probability/label. `kubectl -n heartrisk logs -l app.kubernetes.io/name=heartrisk-api` |
+| **`/metrics`** | `heartrisk_http_requests_total{method,path,status}`, `…_request_duration_seconds` histogram, `…_requests_in_flight`, `heartrisk_predictions_total{label}`, `heartrisk_prediction_probability` histogram, `heartrisk_model_info{model_name,model_version}` |
+| **Prometheus** v3.15.0 | discovers API pods via their `prometheus.io/*` annotations (Role limited to the `heartrisk` namespace), scrapes every 5 s; alert rules `HeartRiskApiDown`, `HeartRiskApiHighErrorRate`, `HeartRiskApiSlow` |
+| **Grafana** 13.2.3 | Prometheus datasource + **Heart Disease Risk API** dashboard provisioned from `k8s/monitoring/grafana/` (home page, anonymous read-only): request rate, error rate, p50/p95/p99 latency, replicas up, model version, traffic per replica, predictions by outcome, probability distribution, 422s, in-flight |
+| Access | `http://<minikube ip>/grafana/` and `/prometheus/` on the same Ingress (admin login `admin` / `heartrisk-admin`, local demo only) |
+
+Config files are turned into ConfigMaps by Kustomize with a content hash, so editing the
+scrape config or the dashboard automatically rolls Prometheus/Grafana.
+
 ## CI/CD (GitHub Actions)
 
 `.github/workflows/ci.yml` runs on every push / pull request to `main` (and manually):
@@ -129,7 +147,7 @@ lint ──▶ test ──▶ train ──▶ docker
 | Job | Does | Fails when | Artifacts |
 |---|---|---|---|
 | lint | `ruff check` (errors annotated inline on the PR/commit) | any lint error | `lint-log` |
-| test | 72 pytest tests + coverage | any test fails | `test-reports` (pytest log, JUnit XML, coverage XML + HTML) |
+| test | 79 pytest tests + coverage | any test fails | `test-reports` (pytest log, JUnit XML, coverage XML + HTML) |
 | train | download → full grid search → MLflow → sanity prediction | training error, or CV ROC-AUC < 0.85 | `model`, `training-outputs` (logs, figures, `mlruns.tar.gz`) |
 | docker | builds the image **with the model trained in this run**, runs the smoke test | build fails / any endpoint check fails | `docker-smoke-log` |
 
@@ -140,7 +158,7 @@ size) to the run page; logs are uploaded even when a job fails.
 
 ```bash
 ruff check src scripts tests
-pytest --cov=heartrisk          # 72 tests, ~13 s, 98 % coverage
+pytest --cov=heartrisk          # 79 tests, ~13 s, 98 % coverage
 ```
 
 | File | Covers |
@@ -150,6 +168,7 @@ pytest --cov=heartrisk          # 72 tests, ~13 s, 98 % coverage
 | `tests/test_evaluation.py` | metric correctness, threshold behaviour, edge cases, plot generation |
 | `tests/test_eda.py` | every EDA figure renders |
 | `tests/test_k8s_manifests.py` | manifests agree with the API/Dockerfile: probe routes exist, ports, selectors, Ingress → Service, HPA/PDB targets, hardening, scrape annotations |
+| `tests/test_monitoring_manifests.py` | dashboard + alert queries only use metrics the API exports, Prometheus uses the Deployment's scrape annotations, kustomize files exist, sub-path config matches the Ingress |
 | `tests/test_api.py` | health, predict/batch contract, parity with offline pipeline, validation (422), optional fields, request-id, JSON logs, Prometheus metrics, 503 without model |
 | `tests/test_train.py` | quick training run in a sandbox: all models trained, ROC-AUC > 0.8, best-on-CV selected, artefacts + MLflow runs written, **reproducible predictions across two runs** |
 

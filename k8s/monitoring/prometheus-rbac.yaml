@@ -1,0 +1,30 @@
+# Least privilege: Prometheus may only discover pods in the app namespace (a Role, not a ClusterRole).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-discovery
+  namespace: heartrisk
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-discovery
+  namespace: heartrisk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-discovery
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: monitoring
