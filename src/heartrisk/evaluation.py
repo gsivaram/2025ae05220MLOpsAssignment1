@@ -12,6 +12,7 @@ from sklearn.metrics import (
     average_precision_score,
     confusion_matrix,
     f1_score,
+    make_scorer,
     precision_recall_curve,
     precision_score,
     recall_score,
@@ -27,11 +28,13 @@ MODEL_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]
 SEQUENTIAL_BLUE = LinearSegmentedColormap.from_list("blue_seq", ["#cde2fb", "#6da7ec", "#256abf", "#0d366b"])
 
 # Scorers used by cross-validation; keys become MLflow metric names.
+# Heavily regularised grid candidates can predict no positives in a fold; score that
+# as 0 explicitly instead of letting sklearn emit an UndefinedMetricWarning per fold.
 CV_SCORING = {
     "accuracy": "accuracy",
-    "precision": "precision",
-    "recall": "recall",
-    "f1": "f1",
+    "precision": make_scorer(precision_score, zero_division=0),
+    "recall": make_scorer(recall_score, zero_division=0),
+    "f1": make_scorer(f1_score, zero_division=0),
     "roc_auc": "roc_auc",
 }
 
