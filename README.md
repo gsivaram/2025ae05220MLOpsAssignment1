@@ -1,5 +1,7 @@
 # Heart Disease Risk — End-to-End MLOps
 
+[![CI](https://github.com/gsivaram/2025ae05220MLOpsAssignment1/actions/workflows/ci.yml/badge.svg)](https://github.com/gsivaram/2025ae05220MLOpsAssignment1/actions/workflows/ci.yml)
+
 Binary classifier predicting presence of heart disease from 13 clinical features
 (UCI Heart Disease, Cleveland subset), packaged as a monitored, containerised API.
 
@@ -91,6 +93,24 @@ curl -X POST localhost:8000/predict -H 'Content-Type: application/json' -d @samp
 
 Image: two-stage build on `python:3.12-slim`, serving deps only
 (`requirements-serve.txt`), non-root user, model baked in, built-in HEALTHCHECK.
+
+## CI/CD (GitHub Actions)
+
+`.github/workflows/ci.yml` runs on every push / pull request to `main` (and manually):
+
+```
+lint ──▶ test ──▶ train ──▶ docker
+```
+
+| Job | Does | Fails when | Artifacts |
+|---|---|---|---|
+| lint | `ruff check` (errors annotated inline on the PR/commit) | any lint error | `lint-log` |
+| test | 61 pytest tests + coverage | any test fails | `test-reports` (pytest log, JUnit XML, coverage XML + HTML) |
+| train | download → full grid search → MLflow → sanity prediction | training error, or CV ROC-AUC < 0.85 | `model`, `training-outputs` (logs, figures, `mlruns.tar.gz`) |
+| docker | builds the image **with the model trained in this run**, runs the smoke test | build fails / any endpoint check fails | `docker-smoke-log` |
+
+Every job writes a summary (test counts, coverage, selected model + metrics, image
+size) to the run page; logs are uploaded even when a job fails.
 
 ## Tests
 

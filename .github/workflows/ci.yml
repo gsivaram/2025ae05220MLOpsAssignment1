@@ -1,0 +1,192 @@
+# CI pipeline: lint -> unit tests -> model training -> Docker build + smoke test.
+# Each job depends on the previous one, so any lint / test / training / container
+# failure stops the pipeline with a red X and the failing step's log. Logs and
+# outputs of every job are uploaded as artifacts (also when the job fails).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}   # a failing command anywhere in a pipe fails the step
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install ruff (pinned as in requirements.txt)
+        run: pip install "$(grep -E '^ruff==' requirements.txt)"
+      - name: Ruff check
+        run: |
+          mkdir -p ci-logs
+          ruff check src scripts tests --output-format=github | tee ci-logs/ruff.log
+      - name: Upload lint log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-log
+          path: ci-logs/
+
+  test:
+    name: Unit tests
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-serve.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
+      - name: Run pytest with coverage
+        run: |
+          mkdir -p ci-logs
+          pytest --cov=heartrisk --cov-report=term --cov-report=xml:ci-logs/coverage.xml \
+                 --cov-report=html:ci-logs/htmlcov --junitxml=ci-logs/junit.xml \
+            | tee ci-logs/pytest.log
+      - name: Test summary
+        if: always()
+        run: |
+          {
+            echo "### Unit tests"
+            echo '```'
+            grep -E "passed|failed|error" ci-logs/pytest.log | tail -1 || echo "no pytest output"
+            grep -E "^TOTAL" ci-logs/pytest.log | awk '{print "coverage: " $NF}' || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: ci-logs/
+
+  train:
+    name: Train model
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-serve.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
+      - name: Acquire + clean data
+        run: |
+          mkdir -p ci-logs
+          python scripts/download_data.py --force | tee ci-logs/data.log
+      - name: Train, tune and log to MLflow
+        run: python scripts/train.py | tee ci-logs/train.log
+      - name: Sanity-check the trained model
+        run: |
+          python scripts/predict.py sample_request.json | tee ci-logs/predict.log
+          # Fail the pipeline if the selected model is worse than a useful floor.
+          python - <<'EOF'
+          import json, sys
+          m = json.load(open("models/metadata.json"))["metrics"]
+          floor = 0.85
+          print(f"cv_roc_auc_mean={m['cv_roc_auc_mean']} (floor {floor})")
+          sys.exit(0 if m["cv_roc_auc_mean"] >= floor else 1)
+          EOF
+      - name: Training summary
+        if: always()
+        run: |
+          python - >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          import json, pathlib
+          p = pathlib.Path("models/metadata.json")
+          if not p.exists():
+              print("### Training\nNo model produced."); raise SystemExit
+          meta = json.loads(p.read_text())
+          print(f"### Selected model: `{meta['model_name']}` (version {meta['model_version']})\n")
+          print("| metric | value |\n|---|---|")
+          for k, v in meta["metrics"].items():
+              if not k.endswith("_std"):
+                  print(f"| {k} | {v} |")
+          print(f"\nBest params: `{meta['best_params']}`")
+          EOF
+      - name: Package MLflow runs
+        if: always()
+        run: tar -czf ci-logs/mlruns.tar.gz mlruns || true
+      - name: Upload model
+        uses: actions/upload-artifact@v4
+        with:
+          name: model
+          path: models/
+      - name: Upload training logs, figures and MLflow runs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-outputs
+          path: |
+            ci-logs/
+            reports/figures/
+
+  docker:
+    name: Docker build + smoke test
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the model trained in this pipeline run
+        uses: actions/download-artifact@v4
+        with:
+          name: model
+          path: models/
+      - name: Build image and run container smoke test
+        run: |
+          mkdir -p ci-logs
+          bash scripts/docker_smoke_test.sh "heartrisk-api:${GITHUB_SHA::7}" 8000 | tee ci-logs/docker-smoke.log
+      - name: Image summary
+        if: success()
+        run: |
+          {
+            echo "### Docker image"
+            echo '```'
+            docker image ls "heartrisk-api:${GITHUB_SHA::7}" --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload smoke-test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-smoke-log
+          path: ci-logs/
