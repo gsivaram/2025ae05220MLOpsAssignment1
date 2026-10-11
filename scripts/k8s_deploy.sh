@@ -37,19 +37,26 @@ platform() {
 }
 
 install_tools() {
-  step "Tools"
+  step "Tools (pinned: minikube ${MINIKUBE_VERSION}, kubectl ${KUBECTL_VERSION})"
   platform
   mkdir -p "$TOOLS_DIR"
-  if ! command -v minikube >/dev/null; then
-    echo "  installing minikube ${MINIKUBE_VERSION} (${OS}/${ARCH}) into ${TOOLS_DIR}"
+  # A different system-wide version is left alone; the pinned one goes into ~/.local/bin,
+  # which is first on PATH, so every machine runs the same minikube/kubectl/Kubernetes.
+  local have
+  have="$(minikube version --short 2>/dev/null || true)"
+  if [ "$have" != "$MINIKUBE_VERSION" ]; then
+    echo "  installing minikube ${MINIKUBE_VERSION} (${OS}/${ARCH}) into ${TOOLS_DIR} (found: ${have:-none})"
     curl -fsSLo "${TOOLS_DIR}/minikube" \
       "https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-${OS}-${ARCH}"
     chmod +x "${TOOLS_DIR}/minikube"
+    hash -r
   fi
-  if ! command -v kubectl >/dev/null; then
-    echo "  installing kubectl ${KUBECTL_VERSION} (${OS}/${ARCH}) into ${TOOLS_DIR}"
+  have="$(kubectl version --client -o json 2>/dev/null | grep -m1 gitVersion | cut -d'"' -f4 || true)"
+  if [ "$have" != "$KUBECTL_VERSION" ]; then
+    echo "  installing kubectl ${KUBECTL_VERSION} (${OS}/${ARCH}) into ${TOOLS_DIR} (found: ${have:-none})"
     curl -fsSLo "${TOOLS_DIR}/kubectl" "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/${OS}/${ARCH}/kubectl"
     chmod +x "${TOOLS_DIR}/kubectl"
+    hash -r
   fi
   docker info >/dev/null 2>&1 || fail "Docker is not running / not accessible without sudo"
   ok "docker $(docker version --format '{{.Server.Version}}')"
@@ -59,6 +66,13 @@ install_tools() {
 
 start_cluster() {
   step "Minikube cluster '${PROFILE}'"
+  local want_k8s running_k8s
+  want_k8s="$(minikube config defaults kubernetes-version 2>/dev/null | head -1 | tr -d '* ' || true)"
+  running_k8s="$(k get nodes -o jsonpath='{.items[0].status.nodeInfo.kubeletVersion}' 2>/dev/null || true)"
+  if [ -n "$running_k8s" ] && [ -n "$want_k8s" ] && [ "$running_k8s" != "$want_k8s" ]; then
+    echo "  cluster runs Kubernetes ${running_k8s} but minikube ${MINIKUBE_VERSION} expects ${want_k8s}: recreating"
+    minikube delete -p "$PROFILE"
+  fi
   if minikube -p "$PROFILE" status >/dev/null 2>&1; then
     ok "already running"
   else
