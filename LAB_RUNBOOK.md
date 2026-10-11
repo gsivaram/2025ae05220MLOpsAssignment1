@@ -152,7 +152,8 @@ Wait ~2 minutes for the graphs to fill.
 | `mon_04_prometheus_query.png` | Prometheus → **Query** → `sum by (pod) (rate(heartrisk_http_requests_total[1m]))` → **Graph** |
 | `mon_05_prometheus_alerts.png` | Prometheus → **Alerts** (3 rules, inactive = healthy) |
 | `mon_06_api_logs.png` | `kubectl --context heartrisk -n heartrisk logs -l app.kubernetes.io/name=heartrisk-api --tail=8` (JSON request logs) |
-| `mon_07_alert_firing.png` *(optional)* | `kubectl --context heartrisk -n heartrisk scale deploy/heartrisk-api --replicas=0`, wait ~1.5 min → Alerts shows **HeartRiskApiDown** firing and dashboard *Replicas up* = 0; restore with `--replicas=2` |
+| `mon_07_hpa_autoscaling.png` | while the load test runs: `kubectl --context heartrisk -n heartrisk get hpa` and `kubectl --context heartrisk -n heartrisk describe hpa heartrisk-api \| tail -8` (CPU above 70 % → *Scaled up* event; dashboard *Replicas up* = 3) |
+| `mon_08_alert_firing.png` *(optional)* | `kubectl --context heartrisk -n heartrisk scale deploy/heartrisk-api --replicas=0`, wait ~1.5 min → Alerts shows **HeartRiskApiDown** firing and dashboard *Replicas up* = 0; restore with `--replicas=2` |
 
 ## 7. Commit the lab results
 

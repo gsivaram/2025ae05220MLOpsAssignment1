@@ -111,9 +111,16 @@ deploy() {
 # Resolve how to reach the Ingress: the minikube IP directly (Linux), else a port-forward
 # to the ingress controller (macOS/Windows, where the docker-driver IP is not routable).
 resolve_endpoint() {
-  local ip
+  local ip direct=no
   ip="$(minikube -p "$PROFILE" ip)"
-  if curl -fs -m 3 -H "Host: ${HOST}" "http://${ip}/health" >/dev/null 2>&1; then
+  # Right after a rollout the ingress controller needs a few seconds to pick up the new
+  # endpoints, so retry before deciding the IP is unreachable (macOS never succeeds here).
+  for _ in $(seq 1 10); do
+    if curl -fs -m 3 -H "Host: ${HOST}" "http://${ip}/health" >/dev/null 2>&1; then direct=yes; break; fi
+    [ "$(uname -s)" = "Darwin" ] && break
+    sleep 3
+  done
+  if [ "$direct" = yes ]; then
     BASE="http://${ip}"
     ok "Ingress reachable at ${BASE} (Host: ${HOST})"
   else
