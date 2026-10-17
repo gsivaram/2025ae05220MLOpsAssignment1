@@ -12,3 +12,7 @@ htmlcov/
 # MLflow local tracking store (runs are reproducible from code)
 mlruns/
 mlflow.db
+
+# Office lock / temp files
+.~lock.*#
+~$*
