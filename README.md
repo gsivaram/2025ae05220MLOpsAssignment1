@@ -116,6 +116,7 @@ bash scripts/k8s_deploy.sh          # install tools if missing → minikube → 
 bash scripts/k8s_deploy.sh status   # objects + access URLs
 bash scripts/k8s_deploy.sh verify   # re-run endpoint checks through the Ingress
 bash scripts/k8s_deploy.sh down     # delete the namespace   |  destroy: delete the cluster
+export PATH=$HOME/.local/bin:$PATH  # in every new terminal, to run minikube / kubectl yourself
 ```
 
 `k8s/` (applied with Kustomize, `kubectl apply -k k8s/`):
