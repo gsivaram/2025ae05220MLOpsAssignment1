@@ -1,7 +1,7 @@
 # Lab Runbook — executing and submitting from the lab
 
-Development happens on a personal machine; **every result that is submitted is
-produced on the lab machine** by following this runbook. The pipeline runner
+**Every result that is submitted is produced on the lab VM** by following this
+runbook. The pipeline runner
 records the host name, OS, Python and package versions and git commit of each run
 in `reports/run/run_summary.md` as proof of where it was executed.
 

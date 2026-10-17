@@ -5,6 +5,17 @@
 Binary classifier predicting presence of heart disease from 13 clinical features
 (UCI Heart Disease, Cleveland subset), packaged as a monitored, containerised API.
 
+## Submission
+
+MLOps (AIMLCZG523) Assignment 1 — Sivaram Gudlavalleti (2025ae05220)
+
+| | |
+|---|---|
+| Report | [`reports/MLOps_Assignment1_Report_2025ae05220.docx`](reports/MLOps_Assignment1_Report_2025ae05220.docx) |
+| Video walkthrough | [Google Drive](https://drive.google.com/file/d/1c4eUDCULMt9sefN-8uZ82uGOMmleSzB_/view?usp=drive_link) |
+| Lab run evidence | [`reports/run/run_summary.md`](reports/run/run_summary.md) · [`screenshots/`](screenshots/) |
+| Lab procedure | [`LAB_RUNBOOK.md`](LAB_RUNBOOK.md) |
+
 ## Quick start
 
 ```bash
