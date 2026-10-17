@@ -16,6 +16,10 @@ MLOps (AIMLCZG523) Assignment 1 — Sivaram Gudlavalleti (2025ae05220)
 | Lab run evidence | [`reports/run/run_summary.md`](reports/run/run_summary.md) · [`screenshots/`](screenshots/) |
 | Lab procedure | [`LAB_RUNBOOK.md`](LAB_RUNBOOK.md) |
 
+> **Note on commit authorship:** commits shown as **SivDXB** were made from my second
+> GitHub account and commits shown as **s2025ae05220** from the BITS lab VM — all are my
+> own work (Sivaram Gudlavalleti, 2025ae05220).
+
 ## Quick start
 
 ```bash
