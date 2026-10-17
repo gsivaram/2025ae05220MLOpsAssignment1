@@ -1,0 +1,20 @@
+........................................................................ [ 91%]
+.......                                                                  [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.9-final-0 ________________
+
+Name                          Stmts   Miss  Cover
+-------------------------------------------------
+src/heartrisk/__init__.py         1      0   100%
+src/heartrisk/api.py             90      4    96%
+src/heartrisk/config.py          19      0   100%
+src/heartrisk/data.py            58      6    90%
+src/heartrisk/eda.py            147      0   100%
+src/heartrisk/evaluation.py     103      0   100%
+src/heartrisk/features.py        36      1    97%
+src/heartrisk/monitoring.py      63      1    98%
+src/heartrisk/schemas.py         41      0   100%
+src/heartrisk/train.py          129      1    99%
+-------------------------------------------------
+TOTAL                           687     13    98%
+79 passed in 100.01s (0:01:40)

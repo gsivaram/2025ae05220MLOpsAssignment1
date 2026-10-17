@@ -1,9 +1,9 @@
 {
   "model_name": "logistic_regression",
-  "model_version": "20261011081729",
+  "model_version": "20261017075558",
   "package_version": "0.1.0",
-  "trained_at": "2026-10-11T08:17:29+00:00",
-  "mlflow_run_id": "d6d037b19b77470fb03621aaa20d5310",
+  "trained_at": "2026-10-17T07:55:58+00:00",
+  "mlflow_run_id": "cad41d21930e4a579f5744d4c1a2fc83",
   "selection_metric": "cv_roc_auc_mean",
   "decision_threshold": 0.5,
   "features": [
@@ -47,6 +47,6 @@
   },
   "n_train": 242,
   "n_test": 61,
-  "python": "3.12.13",
+  "python": "3.12.9",
   "sklearn": "1.7.2"
 }

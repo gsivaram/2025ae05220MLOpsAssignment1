@@ -1,0 +1,21 @@
+2026-10-17 13:22:17,741 INFO heartrisk.train: MLflow tracking URI: file:///home/s2025ae05220/workspace/2025ae05220MLOpsAssignment1/mlruns
+2026-10-17 13:22:17,757 INFO heartrisk.train: Train 242 rows, test 61 rows
+2026-10-17 13:22:31,892 INFO heartrisk.train: logistic_regression: 48 candidates in 12.5s, best CV roc_auc=0.9075
+2026-10-17 13:24:47,246 INFO heartrisk.train: random_forest: 36 candidates in 40.1s, best CV roc_auc=0.9006
+2026-10-17 13:25:32,801 INFO heartrisk.train: gradient_boosting: 32 candidates in 17.1s, best CV roc_auc=0.8870
+2026-10-17 13:25:58,963 INFO heartrisk.train: Saved /home/s2025ae05220/workspace/2025ae05220MLOpsAssignment1/models/model.joblib and /home/s2025ae05220/workspace/2025ae05220MLOpsAssignment1/models/metadata.json
+2026-10-17 13:25:58,964 INFO heartrisk.train: Selected logistic_regression (CV ROC-AUC 0.9075, test ROC-AUC 0.9610)
+
+Model summary (CV = 5-fold on training split, test = held-out 20%):
+name                logistic_regression  random_forest  gradient_boosting
+cv_accuracy_mean                  0.855          0.822              0.826
+cv_precision_mean                 0.882          0.831              0.844
+cv_recall_mean                    0.801          0.774              0.774
+cv_f1_mean                        0.834          0.797              0.801
+cv_roc_auc_mean                   0.907          0.901              0.887
+test_accuracy                     0.869          0.885              0.902
+test_precision                    0.812          0.839              0.867
+test_recall                       0.929          0.929              0.929
+test_f1                           0.867          0.881              0.897
+test_roc_auc                      0.961          0.949              0.959
+test_avg_precision                0.949          0.932              0.957

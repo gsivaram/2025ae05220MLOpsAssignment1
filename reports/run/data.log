@@ -1,0 +1,13 @@
+2026-10-17 13:21:01,113 INFO heartrisk.data: Downloading https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data
+2026-10-17 13:21:02,624 INFO heartrisk.data: Saved 18461 bytes (sha256=a74b7efa387bc9d1)
+2026-10-17 13:21:02,820 INFO heartrisk.data: Wrote /home/s2025ae05220/workspace/2025ae05220MLOpsAssignment1/data/processed/heart_clean.csv (303 rows, 14 cols)
+
+Clean dataset: 303 rows x 14 columns
+Missing values (imputed later inside the model pipeline):
+ca      4
+thal    2
+
+Class balance:
+target
+no disease    164
+disease       139

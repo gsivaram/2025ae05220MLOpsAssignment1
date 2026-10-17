@@ -1,0 +1,320 @@
+
+[1m== Build heartrisk-api:latest[0m
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.65kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 1.9s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+#3 sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 9.08kB / 9.08kB done
+#3 sha256:7b32114e84ca21aeb2d6f871a0b62b3a0762193f75d9afd048ee4cbe889f3148 1.13kB / 1.13kB done
+#3 sha256:528c92d70d7e39dbb3dd1c6681f6750c565c7e45b70527cda47c1a61495c1b6a 1.41kB / 1.41kB done
+#3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0B / 14.28MB 0.1s
+#3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62
+#3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 14.28MB / 14.28MB 0.3s done
+#3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0.2s done
+#3 DONE 0.6s
+
+#4 [internal] load metadata for docker.io/library/python:3.12-slim
+#4 DONE 1.9s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 281B 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 59.96kB 0.0s done
+#6 DONE 0.1s
+
+#7 [builder 1/7] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+#7 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 0.0s done
+#7 sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 10.37kB / 10.37kB done
+#7 sha256:2b4f19dae3a777dfc3b76730bda1e82e1f66ab2a2686fa93ca78edbfb4f04ffe 1.75kB / 1.75kB done
+#7 sha256:df18428df8a0f9189c84e7424d214b4c50092af1f9dca5842a00c41c39bda316 5.66kB / 5.66kB done
+#7 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 0B / 29.84MB 0.1s
+#7 sha256:75b6a36c64a1cf3520fc4b4aae4739d5caa8a6a05c27835a920a61784c9c32f8 0B / 1.29MB 0.1s
+#7 sha256:6912e23eb44595b44dc6d9882b34f305ad6f6e9667cec70b13e5dbc4f8cd97f4 0B / 12.12MB 0.1s
+#7 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 20.70MB / 29.84MB 0.3s
+#7 sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 29.84MB / 29.84MB 0.3s done
+#7 sha256:bbc5a12237474ec0b23b5051260d56d6436a24d70d9cad961adebe7a037ed813 0B / 249B 0.4s
+#7 extracting sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e
+#7 sha256:75b6a36c64a1cf3520fc4b4aae4739d5caa8a6a05c27835a920a61784c9c32f8 1.29MB / 1.29MB 0.4s done
+#7 sha256:6912e23eb44595b44dc6d9882b34f305ad6f6e9667cec70b13e5dbc4f8cd97f4 12.12MB / 12.12MB 0.6s done
+#7 sha256:bbc5a12237474ec0b23b5051260d56d6436a24d70d9cad961adebe7a037ed813 249B / 249B 0.6s done
+#7 extracting sha256:ecc510c1e359bdc007b39802570bb7e4dec7d6ebccf357c3201a74299113e05e 1.9s done
+#7 extracting sha256:75b6a36c64a1cf3520fc4b4aae4739d5caa8a6a05c27835a920a61784c9c32f8
+#7 extracting sha256:75b6a36c64a1cf3520fc4b4aae4739d5caa8a6a05c27835a920a61784c9c32f8 0.2s done
+#7 extracting sha256:6912e23eb44595b44dc6d9882b34f305ad6f6e9667cec70b13e5dbc4f8cd97f4
+#7 extracting sha256:6912e23eb44595b44dc6d9882b34f305ad6f6e9667cec70b13e5dbc4f8cd97f4 1.0s done
+#7 extracting sha256:bbc5a12237474ec0b23b5051260d56d6436a24d70d9cad961adebe7a037ed813 done
+#7 DONE 4.0s
+
+#8 [stage-1 2/5] RUN useradd --create-home --uid 10001 appuser
+#8 ...
+
+#9 [builder 2/7] WORKDIR /build
+#9 DONE 0.5s
+
+#10 [builder 3/7] COPY requirements-serve.txt .
+#10 DONE 0.1s
+
+#8 [stage-1 2/5] RUN useradd --create-home --uid 10001 appuser
+#8 DONE 0.6s
+
+#11 [stage-1 3/5] WORKDIR /app
+#11 DONE 0.1s
+
+#12 [builder 4/7] RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements-serve.txt
+#12 3.425 Collecting numpy==2.5.3 (from -r requirements-serve.txt (line 3))
+#12 3.458   Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+#12 3.719 Collecting pandas==2.3.3 (from -r requirements-serve.txt (line 4))
+#12 3.724   Downloading pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (91 kB)
+#12 3.963 Collecting scikit-learn==1.7.2 (from -r requirements-serve.txt (line 5))
+#12 3.970   Downloading scikit_learn-1.7.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)
+#12 4.023 Collecting joblib==1.6.0 (from -r requirements-serve.txt (line 6))
+#12 4.027   Downloading joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+#12 4.143 Collecting fastapi==0.143.0 (from -r requirements-serve.txt (line 7))
+#12 4.148   Downloading fastapi-0.143.0-py3-none-any.whl.metadata (26 kB)
+#12 4.227 Collecting uvicorn==0.54.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 4.233   Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+#12 4.446 Collecting pydantic==2.14.0 (from -r requirements-serve.txt (line 9))
+#12 4.452   Downloading pydantic-2.14.0-py3-none-any.whl.metadata (131 kB)
+#12 4.491 Collecting prometheus-client==0.26.0 (from -r requirements-serve.txt (line 10))
+#12 4.496   Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+#12 4.535 Collecting python-dateutil>=2.8.2 (from pandas==2.3.3->-r requirements-serve.txt (line 4))
+#12 4.540   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#12 4.608 Collecting pytz>=2020.1 (from pandas==2.3.3->-r requirements-serve.txt (line 4))
+#12 4.612   Downloading pytz-2026.5-py2.py3-none-any.whl.metadata (22 kB)
+#12 4.635 Collecting tzdata>=2022.7 (from pandas==2.3.3->-r requirements-serve.txt (line 4))
+#12 4.639   Downloading tzdata-2026.5-py2.py3-none-any.whl.metadata (1.4 kB)
+#12 4.903 Collecting scipy>=1.8.0 (from scikit-learn==1.7.2->-r requirements-serve.txt (line 5))
+#12 4.908   Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+#12 4.976 Collecting threadpoolctl>=3.1.0 (from scikit-learn==1.7.2->-r requirements-serve.txt (line 5))
+#12 4.981   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+#12 5.010 Collecting cloudpickle>=3.0 (from joblib==1.6.0->-r requirements-serve.txt (line 6))
+#12 5.014   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+#12 5.077 Collecting starlette>=0.46.0 (from fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 5.082   Downloading starlette-1.8.0-py3-none-any.whl.metadata (6.6 kB)
+#12 5.148 Collecting typing-extensions>=4.8.0 (from fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 5.153   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#12 5.168 Collecting typing-inspection>=0.4.2 (from fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 5.184   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#12 5.195 Collecting annotated-doc>=0.0.2 (from fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 5.201   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+#12 5.243 Collecting opentelemetry-api>=1.44.0 (from fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 5.247   Downloading opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
+#12 5.280 Collecting click>=7.0 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 5.285   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#12 5.299 Collecting h11>=0.8 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 5.304   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#12 5.320 Collecting annotated-types>=0.6.0 (from pydantic==2.14.0->-r requirements-serve.txt (line 9))
+#12 5.325   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#12 6.701 Collecting pydantic-core==2.50.0 (from pydantic==2.14.0->-r requirements-serve.txt (line 9))
+#12 6.706   Downloading pydantic_core-2.50.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.5 kB)
+#12 6.829 Collecting httptools>=0.8.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 6.833   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+#12 6.860 Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 6.866   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#12 6.932 Collecting pyyaml>=5.1 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 6.936   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#12 7.013 Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 7.018   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+#12 7.149 Collecting watchfiles>=0.20 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 7.153   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#12 7.382 Collecting websockets>=13.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 8))
+#12 7.387   Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+#12 7.428 Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.3.3->-r requirements-serve.txt (line 4))
+#12 7.433   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#12 7.502 Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 7.507   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+#12 7.590 Collecting idna>=2.8 (from anyio<5,>=4.0.0->starlette>=0.46.0->fastapi==0.143.0->-r requirements-serve.txt (line 7))
+#12 7.595   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#12 7.613 Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+#12 7.672    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 303.6 MB/s eta 0:00:00
+#12 7.677 Downloading pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.4 MB)
+#12 7.720    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.4/12.4 MB 311.4 MB/s eta 0:00:00
+#12 7.726 Downloading scikit_learn-1.7.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.5 MB)
+#12 7.765    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.5/9.5 MB 268.4 MB/s eta 0:00:00
+#12 7.770 Downloading joblib-1.6.0-py3-none-any.whl (306 kB)
+#12 7.777 Downloading fastapi-0.143.0-py3-none-any.whl (144 kB)
+#12 7.782 Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+#12 7.787 Downloading pydantic-2.14.0-py3-none-any.whl (487 kB)
+#12 7.793 Downloading prometheus_client-0.26.0-py3-none-any.whl (64 kB)
+#12 7.799 Downloading pydantic_core-2.50.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+#12 7.810    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 309.2 MB/s eta 0:00:00
+#12 7.814 Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#12 7.818 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#12 7.823 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#12 7.827 Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+#12 7.831 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#12 7.836 Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+#12 7.841    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 361.9 MB/s eta 0:00:00
+#12 7.845 Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#12 7.850 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#12 7.855 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#12 7.859 Downloading pytz-2026.5-py2.py3-none-any.whl (506 kB)
+#12 7.866 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+#12 7.873    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 370.9 MB/s eta 0:00:00
+#12 7.877 Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+#12 8.009    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 277.4 MB/s eta 0:00:00
+#12 8.014 Downloading starlette-1.8.0-py3-none-any.whl (79 kB)
+#12 8.018 Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+#12 8.023 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#12 8.028 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#12 8.033 Downloading tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+#12 8.039 Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+#12 8.059    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 295.0 MB/s eta 0:00:00
+#12 8.064 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+#12 8.071 Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (225 kB)
+#12 8.076 Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#12 8.081 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#12 8.086 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#12 8.329 Saved /wheels/numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+#12 8.344 Saved /wheels/pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+#12 8.354 Saved /wheels/scikit_learn-1.7.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+#12 8.356 Saved /wheels/joblib-1.6.0-py3-none-any.whl
+#12 8.357 Saved /wheels/fastapi-0.143.0-py3-none-any.whl
+#12 8.357 Saved /wheels/uvicorn-0.54.0-py3-none-any.whl
+#12 8.359 Saved /wheels/pydantic-2.14.0-py3-none-any.whl
+#12 8.360 Saved /wheels/prometheus_client-0.26.0-py3-none-any.whl
+#12 8.363 Saved /wheels/pydantic_core-2.50.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+#12 8.364 Saved /wheels/annotated_doc-0.0.5-py3-none-any.whl
+#12 8.366 Saved /wheels/annotated_types-0.8.0-py3-none-any.whl
+#12 8.367 Saved /wheels/click-8.5.0-py3-none-any.whl
+#12 8.368 Saved /wheels/cloudpickle-3.1.2-py3-none-any.whl
+#12 8.369 Saved /wheels/h11-0.16.0-py3-none-any.whl
+#12 8.371 Saved /wheels/httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl
+#12 8.371 Saved /wheels/opentelemetry_api-1.45.1-py3-none-any.whl
+#12 8.373 Saved /wheels/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
+#12 8.373 Saved /wheels/python_dotenv-1.2.4-py3-none-any.whl
+#12 8.375 Saved /wheels/pytz-2026.5-py2.py3-none-any.whl
+#12 8.376 Saved /wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+#12 8.412 Saved /wheels/scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+#12 8.413 Saved /wheels/starlette-1.8.0-py3-none-any.whl
+#12 8.414 Saved /wheels/threadpoolctl-3.7.0-py3-none-any.whl
+#12 8.415 Saved /wheels/typing_extensions-4.16.0-py3-none-any.whl
+#12 8.416 Saved /wheels/typing_inspection-0.4.4-py3-none-any.whl
+#12 8.417 Saved /wheels/tzdata-2026.5-py2.py3-none-any.whl
+#12 8.422 Saved /wheels/uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+#12 8.424 Saved /wheels/watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+#12 8.425 Saved /wheels/websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl
+#12 8.426 Saved /wheels/anyio-4.15.1-py3-none-any.whl
+#12 8.427 Saved /wheels/six-1.17.0-py2.py3-none-any.whl
+#12 8.428 Saved /wheels/idna-3.20-py3-none-any.whl
+#12 8.572 
+#12 8.572 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#12 8.572 [notice] To update, run: pip install --upgrade pip
+#12 DONE 9.1s
+
+#13 [builder 5/7] COPY pyproject.toml .
+#13 DONE 0.1s
+
+#14 [builder 6/7] COPY src ./src
+#14 DONE 0.0s
+
+#15 [builder 7/7] RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels .
+#15 0.872 Processing /build
+#15 0.878   Installing build dependencies: started
+#15 2.991   Installing build dependencies: finished with status 'done'
+#15 2.992   Getting requirements to build wheel: started
+#15 3.470   Getting requirements to build wheel: finished with status 'done'
+#15 3.471   Preparing metadata (pyproject.toml): started
+#15 3.857   Preparing metadata (pyproject.toml): finished with status 'done'
+#15 3.861 Building wheels for collected packages: heartrisk
+#15 3.863   Building wheel for heartrisk (pyproject.toml): started
+#15 4.318   Building wheel for heartrisk (pyproject.toml): finished with status 'done'
+#15 4.319   Created wheel for heartrisk: filename=heartrisk-0.1.0-py3-none-any.whl size=21520 sha256=10b71b9aec47c22071f32bd2e328e9afae5fc8ec081aaeeda65cddea0826fe0f
+#15 4.319   Stored in directory: /tmp/pip-ephem-wheel-cache-2_v878_g/wheels/7f/5c/67/61a4ca28ccbc7df61f55a044560f100aa81c66ef20585de495
+#15 4.324 Successfully built heartrisk
+#15 4.454 
+#15 4.454 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#15 4.454 [notice] To update, run: pip install --upgrade pip
+#15 DONE 4.6s
+
+#16 [stage-1 4/5] RUN --mount=type=bind,from=builder,source=/wheels,target=/wheels     pip install --no-cache-dir /wheels/*
+#16 2.785 Processing /wheels/annotated_doc-0.0.5-py3-none-any.whl
+#16 2.793 Processing /wheels/annotated_types-0.8.0-py3-none-any.whl
+#16 2.796 Processing /wheels/anyio-4.15.1-py3-none-any.whl
+#16 2.801 Processing /wheels/click-8.5.0-py3-none-any.whl
+#16 2.804 Processing /wheels/cloudpickle-3.1.2-py3-none-any.whl
+#16 2.807 Processing /wheels/fastapi-0.143.0-py3-none-any.whl
+#16 2.825 Processing /wheels/h11-0.16.0-py3-none-any.whl
+#16 2.829 Processing /wheels/heartrisk-0.1.0-py3-none-any.whl
+#16 2.832 Processing /wheels/httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl
+#16 2.836 Processing /wheels/idna-3.20-py3-none-any.whl
+#16 2.842 Processing /wheels/joblib-1.6.0-py3-none-any.whl
+#16 2.852 Processing /wheels/numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+#16 2.886 Processing /wheels/opentelemetry_api-1.45.1-py3-none-any.whl
+#16 2.890 Processing /wheels/pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+#16 2.994 Processing /wheels/prometheus_client-0.26.0-py3-none-any.whl
+#16 2.999 Processing /wheels/pydantic-2.14.0-py3-none-any.whl
+#16 3.011 Processing /wheels/pydantic_core-2.50.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+#16 3.030 Processing /wheels/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
+#16 3.035 Processing /wheels/python_dotenv-1.2.4-py3-none-any.whl
+#16 3.042 Processing /wheels/pytz-2026.5-py2.py3-none-any.whl
+#16 3.055 Processing /wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+#16 3.061 Processing /wheels/scikit_learn-1.7.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+#16 3.102 Processing /wheels/scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+#16 3.177 Processing /wheels/six-1.17.0-py2.py3-none-any.whl
+#16 3.180 Processing /wheels/starlette-1.8.0-py3-none-any.whl
+#16 3.186 Processing /wheels/threadpoolctl-3.7.0-py3-none-any.whl
+#16 3.190 Processing /wheels/typing_extensions-4.16.0-py3-none-any.whl
+#16 3.193 Processing /wheels/typing_inspection-0.4.4-py3-none-any.whl
+#16 3.197 Processing /wheels/tzdata-2026.5-py2.py3-none-any.whl
+#16 3.206 Processing /wheels/uvicorn-0.54.0-py3-none-any.whl
+#16 3.212 Processing /wheels/uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+#16 3.226 Processing /wheels/watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+#16 3.230 Processing /wheels/websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl
+#16 3.569 Installing collected packages: pytz, websockets, uvloop, tzdata, typing-extensions, threadpoolctl, six, pyyaml, python-dotenv, prometheus-client, numpy, idna, httptools, heartrisk, h11, cloudpickle, click, annotated-types, annotated-doc, uvicorn, typing-inspection, scipy, python-dateutil, pydantic-core, opentelemetry-api, joblib, anyio, watchfiles, starlette, scikit-learn, pydantic, pandas, fastapi
+#16 33.45 Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 cloudpickle-3.1.2 fastapi-0.143.0 h11-0.16.0 heartrisk-0.1.0 httptools-0.9.0 idna-3.20 joblib-1.6.0 numpy-2.5.3 opentelemetry-api-1.45.1 pandas-2.3.3 prometheus-client-0.26.0 pydantic-2.14.0 pydantic-core-2.50.0 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 pytz-2026.5 pyyaml-6.0.3 scikit-learn-1.7.2 scipy-1.18.1 six-1.17.0 starlette-1.8.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 tzdata-2026.5 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.2
+#16 33.45 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#16 33.58 
+#16 33.58 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#16 33.58 [notice] To update, run: pip install --upgrade pip
+#16 DONE 35.1s
+
+#17 [stage-1 5/5] COPY models/model.joblib models/metadata.json ./models/
+#17 DONE 0.1s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 3.2s done
+#18 writing image sha256:10ae29cf158a571cd6b07e1dfd71f19d35274da5029546aeacb44f5056bc86b4 done
+#18 naming to docker.io/library/heartrisk-api:latest done
+#18 DONE 3.2s
+image size: 492MB
+
+[1m== Run container heartrisk-smoke-6531 on port 8000[0m
+
+[1m== Wait for /health[0m
+{"status":"ok","model_loaded":true,"model_version":"20261017075558","uptime_seconds":2.8}
+
+[1m== POST /predict with sample_request.json[0m
+{"prediction":1,"label":"disease","probability_disease":0.6237,"confidence":0.6237,"risk_band":"high","model_name":"logistic_regression","model_version":"20261017075558","request_id":"835836aba399"}
+
+[1m== POST /predict with invalid input (expect HTTP 422)[0m
+HTTP 422
+
+[1m== GET /metrics (excerpt)[0m
+heartrisk_http_requests_total{method="GET",path="/health",status="200"} 2.0
+heartrisk_http_requests_total{method="POST",path="/predict",status="200"} 1.0
+heartrisk_http_requests_total{method="POST",path="/predict",status="422"} 1.0
+heartrisk_predictions_total{label="disease"} 1.0
+heartrisk_model_info{model_name="logistic_regression",model_version="20261017075558"} 1.0
+
+[1m== Docker HEALTHCHECK status (wait for healthy)[0m
+healthy
+
+[1m== Request logs (JSON, last 5 lines)[0m
+{"ts": "2026-10-17T07:59:13", "level": "INFO", "logger": "heartrisk.access", "msg": "request", "request_id": "b0540c3167ef", "method": "GET", "path": "/health", "status": 200, "latency_ms": 1.26, "client": "172.17.0.1"}
+{"ts": "2026-10-17T07:59:13", "level": "INFO", "logger": "heartrisk.api", "msg": "prediction", "request_id": "835836aba399", "prediction": 1, "label": "disease", "probability_disease": 0.6237, "confidence": 0.6237, "risk_band": "high"}
+{"ts": "2026-10-17T07:59:13", "level": "INFO", "logger": "heartrisk.access", "msg": "request", "request_id": "835836aba399", "method": "POST", "path": "/predict", "status": 200, "latency_ms": 20.33, "client": "172.17.0.1"}
+{"ts": "2026-10-17T07:59:13", "level": "INFO", "logger": "heartrisk.access", "msg": "request", "request_id": "80febddefad2", "method": "POST", "path": "/predict", "status": 422, "latency_ms": 1.66, "client": "172.17.0.1"}
+{"ts": "2026-10-17T07:59:14", "level": "INFO", "logger": "heartrisk.access", "msg": "request", "request_id": "7536e6063bf3", "method": "GET", "path": "/health", "status": 200, "latency_ms": 1.24, "client": "127.0.0.1"}
+
+[32mDOCKER SMOKE TEST PASSED[0m
